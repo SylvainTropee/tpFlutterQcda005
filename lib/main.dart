@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       floatingActionButton: ProjectFAB(addProject: _addProject),
       appBar: AppBar(
-        title: Text("Mes Projets"),
+        title: Text(_selectedIndex == 0 ? "Mes Projets" : "Contribuer"),
         centerTitle: true,
         leading: Icon(Icons.rocket_launch),
       ),
