@@ -51,6 +51,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void onSubmitForm(Project project) {
+    setState(() {
+      _projects.add(project);
+      _selectedIndex = 0;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Le projet ${project.title} a été ajouté !")),
+    );
+  }
+
   void _onItemTap(int index) {
     setState(() {
       _selectedIndex = index;
@@ -84,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: _selectedIndex == 0
           ? ProjectsPage(projects: _projects)
-          : ContributionPage(),
+          : ContributionPage(onSubmitForm: onSubmitForm),
     );
   }
 }
