@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:tp_flutter_qcda005/models/task.dart';
+
 enum ProjectStatus { inProgress, done, upComing }
 
 class Project {
@@ -5,6 +10,7 @@ class Project {
   String _desc;
   ProjectStatus _status;
   DateTime? _date;
+  List<Task> _tasks = [];
 
   Project({
     required String title,
@@ -38,6 +44,23 @@ class Project {
 
   set date(DateTime? value) {
     _date = value;
+  }
+
+  List<Task> get tasks => _tasks;
+
+  set tasks(List<Task> value) {
+    _tasks = value;
+  }
+
+  Future<void> initTasks() async {
+    if (_tasks.isEmpty) {
+      var response = await http.get(
+        Uri.parse("https://jsonplaceholder.typicode.com/users/1/todos"),
+      );
+      _tasks = List.from(
+        jsonDecode(response.body).map((t) => Task.fromJson(t)),
+      );
+    }
   }
 
   @override
