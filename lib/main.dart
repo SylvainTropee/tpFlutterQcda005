@@ -1,23 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tp_flutter_qcda005/models/project.dart';
-import 'package:tp_flutter_qcda005/pages/contribution-page.dart';
-import 'package:tp_flutter_qcda005/pages/projects-page.dart';
+import 'package:tp_flutter_qcda005/pages/project-detail-page.dart';
+import 'package:tp_flutter_qcda005/pages/home-page.dart';
+import 'package:tp_flutter_qcda005/pages/project-edit-page.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 import 'common/projectFAB.dart';
 
 void main() {
+  setPathUrlStrategy();
   runApp(const ProjectManhattanApp());
 }
+
+final GoRouter _router = GoRouter(
+    initialLocation: "/",
+    routes: [
+      GoRoute(path: "/", builder: (context, state) => HomePage()),
+      GoRoute(path: "/detail", builder: (context, state) {
+        Project project = state.extra as Project;
+        return ProjectDetailPage(project: project);
+      }),
+      GoRoute(path: "/edit", builder: (context, state) {
+        Project project = state.extra as Project;
+        return ProjectEditPage(project: project);
+      }),
+    ]
+);
+
 
 class ProjectManhattanApp extends StatelessWidget {
   const ProjectManhattanApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: _router,
       title: "Gestion des projets",
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
       theme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.indigo,
@@ -28,73 +48,3 @@ class ProjectManhattanApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-  final List<Project> _projects = [
-    Project(title: "Projet Manhattan", desc: "Un projet vraiment énorme"),
-    Project(title: "Projet important", desc: "Un projet très important"),
-  ];
-
-  void _addProject() {
-    int index = _projects.length + 1;
-    setState(() {
-      _projects.add(
-        Project(title: "Nouveau projet $index", desc: "Nouveau projet"),
-      );
-    });
-  }
-
-  void onSubmitForm(Project project) {
-    setState(() {
-      _projects.add(project);
-      _selectedIndex = 0;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Le projet ${project.title} a été ajouté !")),
-    );
-  }
-
-  void _onItemTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: ProjectFAB(addProject: _addProject),
-      appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? "Mes Projets" : "Contribuer"),
-        centerTitle: true,
-        leading: Icon(Icons.rocket_launch),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTap,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.folder_open),
-            label: "Projets",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline),
-            label: "Contribuer",
-          ),
-        ],
-      ),
-      body: _selectedIndex == 0
-          ? ProjectsPage(projects: _projects)
-          : ContributionPage(onSubmitForm: onSubmitForm),
-    );
-  }
-}

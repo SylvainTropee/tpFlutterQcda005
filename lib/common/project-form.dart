@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:tp_flutter_qcda005/models/project.dart';
 
-class ContributionPage extends StatefulWidget {
+class ProjectForm extends StatefulWidget {
   final Function(Project) onSubmitForm;
+  final Project? project;
 
-  const ContributionPage({required this.onSubmitForm});
+  const ProjectForm({required this.onSubmitForm, this.project});
 
   @override
-  State<ContributionPage> createState() => _ContributionPageState();
+  State<ProjectForm> createState() => _ProjectFormState();
 }
 
-class _ContributionPageState extends State<ContributionPage> {
+class _ProjectFormState extends State<ProjectForm> {
   GlobalKey<FormState> _key = GlobalKey<FormState>();
   DateTime? _pickedDate;
   String? title, desc;
@@ -22,16 +23,35 @@ class _ContributionPageState extends State<ContributionPage> {
     return (value == null || value.isEmpty) ? "Champ requis !" : null;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.project?.date != null) {
+      dateController.text =
+          "${widget.project?.date?.day}/${widget.project?.date?.month}/${widget.project?.date?.year}";
+    }
+  }
+
   void _submitForm() {
     if (_key.currentState!.validate()) {
       //création d'un nouveau projet à sauvegarder
       _key.currentState!.save();
-      var project = Project(
-        title: title ?? "",
-        desc: desc ?? "",
-        status: status ?? ProjectStatus.inProgress,
-        date: _pickedDate,
-      );
+
+      var project = widget.project;
+
+      if (project == null) {
+        project = Project(
+          title: title ?? "",
+          desc: desc ?? "",
+          status: status ?? ProjectStatus.inProgress,
+          date: _pickedDate,
+        );
+      }else{
+        project.title = title ?? "";
+        project.desc = desc ?? "";
+        project.status = status ?? ProjectStatus.inProgress;
+        project.date = _pickedDate;
+      }
       //print(project);
       widget.onSubmitForm(project);
     }
@@ -57,6 +77,7 @@ class _ContributionPageState extends State<ContributionPage> {
         child: ListView(
           children: [
             TextFormField(
+              initialValue: widget.project?.title,
               onSaved: (value) {
                 title = value;
               },
@@ -70,6 +91,7 @@ class _ContributionPageState extends State<ContributionPage> {
             ),
             SizedBox(height: 16),
             TextFormField(
+              initialValue: widget.project?.desc,
               onSaved: (value) {
                 desc = value;
               },
@@ -85,10 +107,10 @@ class _ContributionPageState extends State<ContributionPage> {
             ),
             SizedBox(height: 16),
             DropdownButtonFormField(
+              initialValue: widget.project?.status,
               onSaved: (value) {
                 status = value;
               },
-              initialValue: ProjectStatus.inProgress,
               dropdownColor: Colors.white,
               style: TextStyle(color: Colors.black),
               decoration: InputDecoration(labelText: "Status"),
