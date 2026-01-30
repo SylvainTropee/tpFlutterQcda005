@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:tp_flutter_qcda005/models/project.dart';
+import 'package:tp_flutter_qcda005/providers/navigation-provider.dart';
+import 'package:tp_flutter_qcda005/providers/project-provider.dart';
 
 class ProjectForm extends StatefulWidget {
-  final Function(Project) onSubmitForm;
   final Project? project;
 
-  const ProjectForm({required this.onSubmitForm, this.project});
+  const ProjectForm({this.project});
 
   @override
   State<ProjectForm> createState() => _ProjectFormState();
@@ -22,6 +25,7 @@ class _ProjectFormState extends State<ProjectForm> {
   String? requiredValidateField(String? value) {
     return (value == null || value.isEmpty) ? "Champ requis !" : null;
   }
+
 
   @override
   void initState() {
@@ -46,14 +50,19 @@ class _ProjectFormState extends State<ProjectForm> {
           status: status ?? ProjectStatus.inProgress,
           date: _pickedDate,
         );
+
+        context.read<ProjectProvider>().addProject(project);
+        context.read<NavigationProvider>().selectedIndex = 0;
+
       }else{
         project.title = title ?? "";
         project.desc = desc ?? "";
         project.status = status ?? ProjectStatus.inProgress;
         project.date = _pickedDate;
+
+        context.read<ProjectProvider>().updateProject(project);
+        context.pop();
       }
-      //print(project);
-      widget.onSubmitForm(project);
     }
   }
 

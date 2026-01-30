@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:tp_flutter_qcda005/models/task.dart';
 
 enum ProjectStatus { inProgress, done, upComing }
 
 class Project {
+  Key _key;
   String _title;
   String _desc;
   ProjectStatus _status;
@@ -17,10 +19,18 @@ class Project {
     required String desc,
     ProjectStatus status = ProjectStatus.upComing,
     DateTime? date,
-  }) : _title = title,
+  }) : _key = UniqueKey(),
+       _title = title,
        _desc = desc,
        _status = status,
        _date = date;
+
+
+  Key get key => _key;
+
+  set key(Key value) {
+    _key = value;
+  }
 
   ProjectStatus get status => _status;
 

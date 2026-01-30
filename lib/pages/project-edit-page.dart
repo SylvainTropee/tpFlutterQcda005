@@ -20,9 +20,6 @@ class ProjectEditPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(project.title), centerTitle: true),
       body: ProjectForm(
-        onSubmitForm: (project) {
-          _onUpdateProject(context, project);
-        },
         project: project,
       ),
     );
